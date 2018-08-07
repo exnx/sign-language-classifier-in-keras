@@ -10,7 +10,7 @@ data into corresponding folders, with separate classes as well.
 
 separate-data.sh
 
-Use the sign-language-classifier.py or sign-language-classifier.ipynb for 
+Use sign-language-classifier.py or sign-language-classifier.ipynb for 
 Jupyter notebook.
 
 Follow this tutorial for a detailed explanation.
