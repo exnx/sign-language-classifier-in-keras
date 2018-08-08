@@ -10,7 +10,8 @@ from keras.models import Model
 from keras.applications import imagenet_utils
 from sklearn.metrics import confusion_matrix
 import itertools
-from  import pyplot as plt
+from matplotlib import pyplot as plt
+# get_ipython().magic('matplotlib inline')
 
 train_path = 'Sign-Language-Digits-Dataset/train'
 valid_path = 'Sign-Language-Digits-Dataset/valid'
@@ -18,8 +19,8 @@ test_path = 'Sign-Language-Digits-Dataset/test'
 
 # passes in batches of normalized data
 train_batches = ImageDataGenerator(preprocessing_function=keras.applications.mobilenet.preprocess_input).flow_from_directory(train_path, target_size=(224,224), batch_size=10)
-valid_batches = train_batches = ImageDataGenerator(preprocessing_function=keras.applications.mobilenet.preprocess_input).flow_from_directory(valid_path, target_size=(224,224), batch_size=10)
-test_batches = train_batches = ImageDataGenerator(preprocessing_function=keras.applications.mobilenet.preprocess_input).flow_from_directory(test_path, target_size=(224,224), batch_size=10, shuffle=False)
+valid_batches = ImageDataGenerator(preprocessing_function=keras.applications.mobilenet.preprocess_input).flow_from_directory(valid_path, target_size=(224,224), batch_size=10)
+test_batches = ImageDataGenerator(preprocessing_function=keras.applications.mobilenet.preprocess_input).flow_from_directory(test_path, target_size=(224,224), batch_size=10, shuffle=False)
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -54,7 +55,7 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    
+
 mobile = keras.applications.mobilenet.MobileNet()
 
 x = mobile.layers[-6].output
@@ -66,17 +67,17 @@ model = Model(inputs=mobile.input, outputs=predictions)
 
 for layer in model.layers[:-23]:
     layer.trainable = False
-    
+
 model.compile(Adam(lr=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 model.fit_generator(train_batches, steps_per_epoch=18, validation_data=valid_batches, validation_steps=3, epochs=60, verbose=2)
 
+# predict sign language digits
 test_labels = test_batches.classes  # can get do this, it's a ImageGenerator object
 
 predictions = model.predict_generator(test_batches, steps=5, verbose=0)
 
 cm = confusion_matrix(test_labels, predictions.argmax(axis=1))
-
 test_batches.class_indices  # lets you see the predictions in the chronological order
 
 cm_plot_labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8','9']
